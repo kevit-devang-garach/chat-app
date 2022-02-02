@@ -2,6 +2,9 @@ const path = require('path')
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
+const Filter = require('bad-words')
+const { generateMessage } = require('./utils/messages')
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
 
 const app = express()
 const server = http.createServer(app)
@@ -15,20 +18,51 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')
 
-    socket.emit('message', 'Welcome!')
-    socket.broadcast.emit('message', 'A new user has joined!')
+    
+    socket.on('join', ( options, callback) => {
+        const { error, user } = addUser({id: socket.id,...options})
 
+        if(error){
+            return callback(error)
+        }
+        socket.join(user.room)
+
+        socket.emit('message', generateMessage('','Welcome!'))
+        socket.broadcast.to(user.room).emit('message', generateMessage('',`${user.username} has joined!`))
+        io.to(user.room).emit('roomData',{
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        })
+        // socket.emit, io.emit, socket.broadcast.emit
+        // io.to.emit, socket.broadcast.to.emit
+    })
     socket.on('sendMessage', (message, callback) => {
-        io.emit('message', message)
-        callback('Delivered!')
+        const user = getUser(socket.id)
+        console.log("user",user)
+        const filter = new Filter()
+        if(filter.isProfane(message)){
+            return callback('Profinity is not allowed')
+        }
+        io.to(user.room).emit('message', generateMessage(user.username, message))
+        callback()
     })
 
-    socket.on('sendLocation', (coords) => {
-        io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+    socket.on('sendLocation', (coords,callback) => {
+        const user = getUser(socket.id)
+        console.log("user",user)
+        io.to(user.room).emit('locationMessage', generateMessage(user.username,`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+        callback()
     })
 
     socket.on('disconnect', () => {
-        io.emit('message', 'A user has left!')
+        const user = removeUser(socket.id)
+        if(user){
+            io.to(user.room).emit('message', generateMessage('',`A ${user.username} has left!`))
+            io.to(user.room).emit('roomData',{
+                room: user.room,
+                users: getUsersInRoom(user.room)
+            })
+        }
     })
 })
 
