@@ -40,7 +40,7 @@ input {
 button {
     cursor: pointer;
     padding: 12px;
-    background: #7C5CBF;
+    background: #0044ff;
     border: none;
     color: white;
     font-size: 16px;
@@ -48,18 +48,18 @@ button {
 }
 
 button:hover {
-    background: #6b47b8;
+    background: #7497fa;
 }
 
 button:disabled {
     cursor: default;
-    background: #7c5cbf94;
+    background: #b3bdda;
 }
 
 /* Join Page Styles */
 
 .centered-form {
-    background: #333744;
+    background-image: linear-gradient(to bottom, #ff6e00, #ff776a,  #fedafd, #fedafd,  #00da82, #23c900);
     width: 100vw;
     height: 100vh;   
     display: flex;
@@ -91,8 +91,8 @@ button:disabled {
 
 .chat__sidebar {
     height: 100vh;
-    color: white;
-    background: #333744;
+    color: #ff6e00;
+    background: #fff;
     width: 225px;
     overflow-y: scroll
 }
@@ -110,6 +110,7 @@ button:disabled {
     flex-grow: 1;
     padding: 24px 24px 0 24px;
     overflow-y: scroll;
+    background-color: #effff8;
 }
 
 /* Message Styles */
@@ -138,8 +139,8 @@ button:disabled {
 .compose {
     display: flex;
     flex-shrink: 0;
-    margin-top: 16px;
     padding: 24px;
+    background-color: #effff8;
 }
 
 .compose form {
@@ -165,7 +166,8 @@ button:disabled {
 .room-title {
     font-weight: 400;
     font-size: 22px;
-    background: #2c2f3a;
+    color: #fff;
+    background: #ff6e00;
     padding: 24px;   
 }
 
@@ -180,4 +182,11 @@ button:disabled {
     list-style-type: none;
     font-weight: 300;
     padding: 12px 24px 0 24px;
+}
+
+.room-text{
+    font-size: small;
+    font-weight: bolder;
+    position: absolute;
+    top: 5px;
 }
